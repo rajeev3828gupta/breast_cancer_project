@@ -256,17 +256,17 @@
       <div class="form-card">
         <h3>
           <i class="fas fa-flask-vial"></i>
-          Enter Medical Features
+          Patient ID Lookup
         </h3>
         
         <div class="info-text">
           <i class="fas fa-info-circle"></i>
-          Please enter 31 comma-separated values (Patient ID + 30 medical measurements)
+          Enter a Patient ID to fetch medical data and get prediction results
         </div>
 
         <form action="/predict" method="POST">
-          <label for="feature">Medical Features Input</label>
-          <textarea class="form-control textarea" id="feature" name="feature" rows="4" placeholder="Example: 842302, 17.99, 10.38, 122.8, 1001, 0.1184, 0.2776, 0.3001, 0.1471, 0.2419, 0.07871, 1.095, 0.9053, 8.589, 153.4, 0.006399, 0.04904, 0.05373, 0.01587, 0.03003, 0.006193, 25.38, 17.33, 184.6, 2019, 0.1622, 0.6656, 0.7119, 0.2654, 0.4601, 0.1189" required></textarea>
+          <label for="patient_id">Patient ID</label>
+          <input type="text" class="form-control" id="patient_id" name="patient_id" placeholder="Example: 842302" required>
           <button type="submit" class="btn-predict">
             <i class="fas fa-brain"></i> Analyze & Predict
           </button>

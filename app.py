@@ -29,15 +29,41 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        features = request.form['feature']
-        features = features.split(',')
-        features = [f.strip() for f in features]
-        np_features = np.asarray(features, dtype=np.float32)
-
-        if len(np_features) != 31:
-            message = [f'Error: Expected 31 features, got {len(np_features)}']
+        patient_id = request.form['patient_id'].strip()
+        
+        # Convert ID to int
+        try:
+            patient_id_int = int(patient_id)
+        except ValueError:
+            message = [f'Error: Patient ID must be a valid number']
             return render_template('index.html', message=message, error=True)
-
+        
+        # Load full dataset with id column
+        df_full = pd.read_csv('notebook and dataset/breast cancer.csv')
+        
+        # Find the row with matching ID
+        patient_row = df_full[df_full['id'] == patient_id_int]
+        
+        if patient_row.empty:
+            message = [f'Error: Patient ID {patient_id} not found in database']
+            return render_template('index.html', message=message, error=True)
+        
+        # Extract ID and features
+        id_val = patient_row['id'].values[0]
+        features = patient_row.drop(['id', 'diagnosis'], axis=1, errors='ignore')
+        if 'Unnamed: 32' in features.columns:
+            features = features.drop('Unnamed: 32', axis=1)
+        features = features.values.flatten()
+        
+        # Include ID as first feature (to match scaler training)
+        all_features = np.concatenate([[id_val], features])
+        
+        if len(all_features) != 31:
+            message = [f'Error: Expected 31 features, got {len(all_features)}']
+            return render_template('index.html', message=message, error=True)
+        
+        np_features = np.asarray(all_features, dtype=np.float32)
+        
         # Scale features before prediction
         scaled_features = scaler.transform(np_features.reshape(1, -1))
         
